@@ -1,0 +1,37 @@
+version: '3.8'
+services:
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: nusantara
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+  backend:
+    build: ./backend
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: nusantara
+      DB_USER: postgres
+      DB_PASS: postgres
+      JWT_SECRET: supersecret
+      ADMIN_USERNAME: admin
+      ADMIN_PASSWORD: password
+    ports:
+      - "4000:4000"
+    depends_on:
+      - db
+  frontend:
+    build: ./frontend
+    environment:
+      VITE_API_URL: http://localhost:4000/api
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
+volumes:
+  db-data:
